@@ -1,0 +1,41 @@
+networks:
+  dem:
+
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: QazWsx@Edc1234
+      POSTGRES_DB: clinic_db
+    networks:
+      - dem
+  
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    depends_on:
+      - postgres
+    networks:
+      - dem
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5000:80"
+    depends_on:
+      - postgres
+    networks:
+      - dem
+
+volumes:
+  postgres_data:
